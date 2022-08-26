@@ -17,18 +17,20 @@
 # Python 3 Compatibility imports
 from __future__ import print_function, unicode_literals
 
+import base64
+import hashlib
+import json
+import time
+
+import jwt
 # Phantom App imports
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-from trendmicroapexone_consts import *
-import json
-from bs4 import BeautifulSoup
-import base64
-import jwt
-import hashlib
 import requests
-import time
+from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+
+from trendmicroapexone_consts import *
 
 
 class RetVal(tuple):
@@ -83,7 +85,7 @@ class TrendMicroApexOneConnector(BaseConnector):
         return error_text
 
     def _create_checksum(self, http_method, raw_url, headers, request_body):
-        """ This function is used to derive the checksum that needs to be sent with the HTTP request in order for the request to be accepted by the API"""
+        """ This method is used to derive the checksum that is sent  with the HTTP request so that the request is accepted by the API"""
         string_to_hash = "{0}|{1}|{2}|{3}".format(http_method.upper(), raw_url.lower(), headers, request_body)
         base64_string = base64.b64encode(
             hashlib.sha256(str.encode(string_to_hash)).digest()
@@ -458,8 +460,9 @@ class TrendMicroApexOneConnector(BaseConnector):
 
 
 def main():
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
