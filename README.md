@@ -2,16 +2,16 @@
 # Trend Micro Apex One
 
 Publisher: Splunk Community  
-Connector Version: 1\.0\.1  
+Connector Version: 1\.0\.2  
 Product Vendor: Trend Micro  
 Product Name: Apex One  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 4\.9\.39220  
+Minimum Product Version: 5\.3\.0  
 
 This app provides investigative and containment actions for Trend Micro Apex One
 
 [comment]: # ""
-[comment]: # "File: readme.md"
+[comment]: # "File: README.md"
 [comment]: # "Copyright (c) 2021 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
