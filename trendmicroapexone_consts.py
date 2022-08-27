@@ -19,3 +19,4 @@ APEX_ONE_ERR_CODE_MSG = "Error code unavailable"
 APEX_ONE_ERR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
 APEX_ONE_PARSE_ERR_MSG = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
 APEX_ONE_ERR_SERVER_RES = "Cannot process server response"
+DEFAULT_TIMEOUT = 30  # seconds
