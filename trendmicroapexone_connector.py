@@ -1,6 +1,6 @@
 # File: trendmicroapexone_connector.py
 #
-# Copyright (c) 2022 Splunk Inc.
+# Copyright (c) 2022-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 #
 #
 # Python 3 Compatibility imports
-from __future__ import print_function, unicode_literals
 
 import base64
 import hashlib
@@ -23,6 +22,7 @@ import json
 import time
 
 import jwt
+
 # Phantom App imports
 import phantom.app as phantom
 import requests
@@ -40,9 +40,8 @@ class RetVal(tuple):
 
 class TrendMicroApexOneConnector(BaseConnector):
     def __init__(self):
-
         # Call the BaseConnectors init first
-        super(TrendMicroApexOneConnector, self).__init__()
+        super().__init__()
 
         self._state = None
 
@@ -73,11 +72,9 @@ class TrendMicroApexOneConnector(BaseConnector):
 
         try:
             if error_code in APEX_ONE_ERR_CODE_MSG:
-                error_text = "Error Message: {0}".format(error_msg)
+                error_text = f"Error Message: {error_msg}"
             else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(
-                    error_code, error_msg
-                )
+                error_text = f"Error Code: {error_code}. Error Message: {error_msg}"
         except:
             self.debug_print(APEX_ONE_PARSE_ERR_MSG)
             error_text = APEX_ONE_PARSE_ERR_MSG
@@ -85,11 +82,9 @@ class TrendMicroApexOneConnector(BaseConnector):
         return error_text
 
     def _create_checksum(self, http_method, raw_url, headers, request_body):
-        """ This method is used to derive the checksum that is sent  with the HTTP request so that the request is accepted by the API"""
-        string_to_hash = "{0}|{1}|{2}|{3}".format(http_method.upper(), raw_url.lower(), headers, request_body)
-        base64_string = base64.b64encode(
-            hashlib.sha256(str.encode(string_to_hash)).digest()
-        ).decode("utf-8")
+        """This method is used to derive the checksum that is sent  with the HTTP request so that the request is accepted by the API"""
+        string_to_hash = f"{http_method.upper()}|{raw_url.lower()}|{headers}|{request_body}"
+        base64_string = base64.b64encode(hashlib.sha256(str.encode(string_to_hash)).digest()).decode("utf-8")
         return base64_string
 
     def _create_jwt_token(
@@ -104,31 +99,27 @@ class TrendMicroApexOneConnector(BaseConnector):
         algorithm="HS256",
         version="V1",
     ):
-        """ This method is used to convert request and auth information into a JWT token to use with the request """
+        """This method is used to convert request and auth information into a JWT token to use with the request"""
         payload = {
             "appid": application_id,
             "iat": iat,
             "version": version,
-            "checksum": self._create_checksum(
-                http_method, raw_url, headers, request_body
-            ),
+            "checksum": self._create_checksum(http_method, raw_url, headers, request_body),
         }
         token = jwt.encode(payload, api_key, algorithm=algorithm)
         return token
 
     def _process_empty_response(self, response, action_result):
-        """ This function is used to process empty responses """
+        """This function is used to process empty responses"""
         if response.status_code == 200:
             return RetVal(phantom.APP_SUCCESS, {})
 
         return RetVal(
-            action_result.set_status(
-                phantom.APP_ERROR, "Status Code: {}. Empty response, no information in header".format(response.status_code)
-            ), None
+            action_result.set_status(phantom.APP_ERROR, f"Status Code: {response.status_code}. Empty response, no information in header"), None
         )
 
     def _process_html_response(self, response, action_result):
-        """ This function is used to process html responses """
+        """This function is used to process html responses"""
         status_code = response.status_code
 
         try:
@@ -142,15 +133,13 @@ class TrendMicroApexOneConnector(BaseConnector):
         except:
             error_text = "Cannot parse error details"
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(
-            status_code, error_text
-        )
+        message = f"Status Code: {status_code}. Data from server:\n{error_text}\n"
 
         message = message.replace("{", "{{").replace("}", "}}")
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_json_response(self, r, action_result):
-        """ This function is used to process json responses """
+        """This function is used to process json responses"""
         try:
             resp_json = r.json()
         except Exception as e:
@@ -158,22 +147,20 @@ class TrendMicroApexOneConnector(BaseConnector):
             return RetVal(
                 action_result.set_status(
                     phantom.APP_ERROR,
-                    "Unable to parse JSON response. Error: {0}".format(err),
+                    f"Unable to parse JSON response. Error: {err}",
                 ),
-                None
+                None,
             )
 
         if 200 <= r.status_code < 399:
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
-        message = "Error from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code, r.text.replace("{", "{{").replace("}", "}}")
-        )
+        message = "Error from server. Status Code: {} Data from server: {}".format(r.status_code, r.text.replace("{", "{{").replace("}", "}}"))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
-        """ This function is used to process responses from the API """
+        """This function is used to process responses from the API"""
         if hasattr(action_result, "add_debug_data"):
             action_result.add_debug_data({"r_status_code": r.status_code})
             action_result.add_debug_data({"r_text": r.text})
@@ -195,14 +182,14 @@ class TrendMicroApexOneConnector(BaseConnector):
             return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
+        message = "Can't process response from server. Status Code: {} Data from server: {}".format(
             r.status_code, r.text.replace("{", "{{").replace("}", "}}")
         )
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
-        """ This function is used to issue rest requests """
+        """This function is used to issue rest requests"""
 
         config = self.get_config()
 
@@ -211,15 +198,10 @@ class TrendMicroApexOneConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR, "Invalid method: {0}".format(method)
-                ),
-                resp_json
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Invalid method: {method}"), resp_json)
 
         # Create a URL to connect to
-        url = "{}{}".format(self._base_url, endpoint)
+        url = f"{self._base_url}{endpoint}"
 
         # Add authentication information
         token = self._create_jwt_token(
@@ -232,7 +214,7 @@ class TrendMicroApexOneConnector(BaseConnector):
             time.time(),
         )
         headers = {
-            "Authorization": "Bearer {}".format(token),
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json;charset=utf-8",
         }
 
@@ -244,18 +226,12 @@ class TrendMicroApexOneConnector(BaseConnector):
                 **kwargs,
             )
         except requests.exceptions.ConnectionError:
-            error_reason = 'Error Details: Connection refused from the server for URL: %s' % (url)
+            error_reason = f"Error Details: Connection refused from the server for URL: {url}"
             return RetVal(action_result.set_status(phantom.APP_ERROR, error_reason), resp_json)
         except Exception as e:
             error_reason = self._get_error_message_from_exception(e)
 
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    "Error Connecting to server. Details: {0}".format(error_reason)
-                ),
-                resp_json
-            )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {error_reason}"), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -290,23 +266,17 @@ class TrendMicroApexOneConnector(BaseConnector):
 
         req_payload = json.dumps(payload)
 
-        ret_val, response = self._make_rest_call(
-            endpoint, action_result, "post", data=req_payload
-        )
+        ret_val, response = self._make_rest_call(endpoint, action_result, "post", data=req_payload)
 
         return ret_val, response
 
     def _handle_quarantine_device(self, param):
-        self.save_progress(
-            "In action handler for: {0}".format(self.get_action_identifier())
-        )
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         ip_hostname = param["ip_hostname"]
 
-        ret_val, response = self._modify_device(
-            action_result, ip_hostname, action="cmd_isolate_agent"
-        )
+        ret_val, response = self._modify_device(action_result, ip_hostname, action="cmd_isolate_agent")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -326,16 +296,12 @@ class TrendMicroApexOneConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_unquarantine_device(self, param):
-        self.save_progress(
-            "In action handler for: {0}".format(self.get_action_identifier())
-        )
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         ip_hostname = param["ip_hostname"]
 
-        ret_val, response = self._modify_device(
-            action_result, ip_hostname, action="cmd_restore_isolated_agent"
-        )
+        ret_val, response = self._modify_device(action_result, ip_hostname, action="cmd_restore_isolated_agent")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -355,9 +321,7 @@ class TrendMicroApexOneConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_endpoints(self, param):
-        self.save_progress(
-            "In action handler for: {0}".format(self.get_action_identifier())
-        )
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         endpoint = APEX_ONE_PRODUCT_AGENTS_ENDPOINT
@@ -382,9 +346,7 @@ class TrendMicroApexOneConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_get_system_info(self, param):
-        self.save_progress(
-            "In action handler for: {0}".format(self.get_action_identifier())
-        )
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         ip_hostname = param["ip_hostname"]
@@ -395,9 +357,7 @@ class TrendMicroApexOneConnector(BaseConnector):
         else:
             qs = f"?host_name={ip_hostname}"
 
-        ret_val, response = self._make_rest_call(
-            "{0}{1}".format(endpoint, qs), action_result, params=None
-        )
+        ret_val, response = self._make_rest_call(f"{endpoint}{qs}", action_result, params=None)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -479,7 +439,6 @@ def main():
     password = args.password
 
     if username is not None and password is None:
-
         # User specified a username but not a password, so ask
         import getpass
 
