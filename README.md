@@ -1,9 +1,9 @@
 # Trend Micro Apex One
 
-Publisher: Splunk Community \
-Connector Version: 1.0.3 \
-Product Vendor: Trend Micro \
-Product Name: Apex One \
+Publisher: Splunk Community <br>
+Connector Version: 1.0.3 <br>
+Product Vendor: Trend Micro <br>
+Product Name: Apex One <br>
 Minimum Product Version: 5.3.0
 
 This app provides investigative and containment actions for Trend Micro Apex One
@@ -17,20 +17,21 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **base_url** | required | string | Apex Server URL |
 **application_id** | required | string | Apex Central Application ID |
 **api_key** | required | password | Apex Central API Key |
+**verify_server_cert** | optional | boolean | Verify server certificate |
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[quarantine device](#action-quarantine-device) - Quarantine an endpoint \
-[unquarantine device](#action-unquarantine-device) - Unquarantine an endpoint \
-[list endpoints](#action-list-endpoints) - List all the configured security agents \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[quarantine device](#action-quarantine-device) - Quarantine an endpoint <br>
+[unquarantine device](#action-unquarantine-device) - Unquarantine an endpoint <br>
+[list endpoints](#action-list-endpoints) - List all the configured security agents <br>
 [get system info](#action-get-system-info) - Get information about a security agent
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -45,7 +46,7 @@ No Output
 
 Quarantine an endpoint
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -79,7 +80,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Unquarantine an endpoint
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -113,7 +114,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 List all the configured security agents
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -144,7 +145,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get information about a security agent
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -178,7 +179,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
