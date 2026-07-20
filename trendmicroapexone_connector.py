@@ -1,6 +1,6 @@
 # File: trendmicroapexone_connector.py
 #
-# Copyright (c) 2022-2025 Splunk Inc.
+# Copyright (c) 2022-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -221,7 +221,7 @@ class TrendMicroApexOneConnector(BaseConnector):
         try:
             r = request_func(
                 url,
-                verify=config.get("verify_server_cert", False),
+                verify=config.get("verify_server_cert", True),
                 headers=headers,
                 **kwargs,
             )
