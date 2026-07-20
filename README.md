@@ -1,7 +1,7 @@
 # Trend Micro Apex One
 
 Publisher: Splunk Community <br>
-Connector Version: 1.0.3 <br>
+Connector Version: 2.0.0 <br>
 Product Vendor: Trend Micro <br>
 Product Name: Apex One <br>
 Minimum Product Version: 5.3.0
